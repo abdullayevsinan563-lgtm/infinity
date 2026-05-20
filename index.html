@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infinity Tournament Siber Hub</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: radial-gradient(circle at center, #140e28 0%, #05050a 100%);
+    font-family: 'Rajdhani', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px 10px;
+}
+
+.card {
+    width: 100%;
+    max-width: 400px;
+    height: 680px;
+    background: rgba(17, 17, 34, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    border-radius: 24px;
+    padding: 20px 20px 95px 20px;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 
+                0 0 40px rgba(139, 92, 246, 0.25);
+    color: white;
+    z-index: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Üstten Aşağı Kayan Bildirim Paneli */
+.announcement-container {
+    position: absolute;
+    top: -80px;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(180deg, rgba(239, 68, 68, 0.25) 0%, rgba(17, 17, 34, 0.95) 100%);
+    border-bottom: 2px solid #ef4444;
+    padding: 10px 20px;
+    z-index: 200;
+    box-shadow: 0 5px 20px rgba(239, 68, 68, 0.3);
+    transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.announcement-container.slide-down {
+    top: 0;
+}
+
+.announcement-glow-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 1px;
+    text-align: center;
+    text-shadow: 0 0 8px #ef4444;
+}
+
+.logo-container {
+    position: relative;
+    width: 80px;
+    margin: 0 auto;
+}
+
+.logo {
+    width: 100%;
+    display: block;
+    filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.6));
+}
+
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    text-align: center;
+    margin-top: 5px;
+    color: #ffffff;
+    font-size: 24px;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px rgba(192, 132, 252, 0.6);
+}
+
+.tab-content {
+    display: none;
+    margin-top: 10px;
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 2px;
+}
+
+.tab-content::-webkit-scrollbar {
+    width: 4px;
+}
+.tab-content::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.3);
+    border-radius: 10px;
+}
+
+.tab-content.active-tab {
+    display: block;
+}
+
+.admin-tournament-panel {
+    display: none;
+    background: rgba(139, 92, 246, 0.08);
+    border: 1px dashed rgba(139, 92, 246, 0.4);
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+.admin-tournament-panel input {
+    width: 100%;
+    padding: 6px 10px;
+    background: rgba(20, 20, 30, 0.8);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 6px;
+    color: white;
+    font-size: 13px;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.admin-grid-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.live-tournament-card {
+    background: rgba(26, 26, 46, 0.6);
+    border: 1px solid rgba(192, 132, 252, 0.3);
+    border-radius: 16px;
+    padding: 15px;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.live-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    color: #c084fc;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.live-pulse {
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    animation: pulseGlow 1.5s infinite alternate;
+}
+
+@keyframes pulseGlow {
+    0% { transform: scale(0.9); opacity: 0.6; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    100% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 8px 4px rgba(239, 68, 68, 0); }
+}
+
+.countdown-box {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    color: #ffffff;
+    background: rgba(17, 17, 34, 0.8);
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    margin-bottom: 15px;
+}
+
+.bracket-container {
+    background: rgba(10, 10, 20, 0.6);
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 12px;
+    border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.bracket-title {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.bracket-view {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+}
+
+.bracket-team {
+    background: rgba(30, 30, 55, 0.8);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    padding: 4px 8px;
+    border-radius: 5px;
+    width: 100px;
+    text-align: center;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bracket-vs {
+    font-family: 'Orbitron', sans-serif;
+    color: #c084fc;
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.description {
+    text-align: center;
+    color: #b4b4d3;
+    line-height: 1.5;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    color: #c084fc;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(20, 20, 30, 0.7);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 12px;
+    color: white;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+}
+
+.search-wrapper {
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 14px 10px 35px;
+    background: rgba(20, 20, 35, 0.7);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 10px;
+    color: white;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(192, 132, 252, 0.6);
+}
+
+.owner-announcement-panel {
+    display: none;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px dashed rgba(239, 68, 68, 0.4);
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+.owner-announcement-panel input {
+    width: 100%;
+    padding: 6px 10px;
+    background: rgba(20, 20, 30, 0.8);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 6px;
+    color: white;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.form-toggle-text {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #b4b4d3;
+}
+
+.form-toggle-text span {
+    color: #c084fc;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.profile-view {
+    text-align: center;
+    padding: 5px;
+}
+
+.cyber-card-header {
+    background: rgba(26, 26, 46, 0.5);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 16px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.avatar-upload {
+    position: relative;
+    width: 65px;
+    height: 65px;
+    margin: 0 auto 8px auto;
+}
+
+.avatar-preview {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid #c084fc;
+    object-fit: cover;
+    background: #1a1a2e;
+}
+
+.profile-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    color: white;
+    font-weight: 700;
+}
+
+.profile-email-text {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-bottom: 5px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.badge-challenger {
+    background: rgba(139, 92, 246, 0.2);
+    border: 1px solid #8b5cf6;
+    color: #c084fc;
+}
+
+.badge-owner {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid #ef4444;
+    color: #f87171;
+}
+
+.profile-stats-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.cyber-stat-box {
+    background: rgba(20, 20, 30, 0.6);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 10px;
+    padding: 6px;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 10px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.stat-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    color: white;
+    font-weight: 900;
+}
+
+.profile-custom-section {
+    text-align: left;
+    background: rgba(15, 15, 30, 0.6);
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.profile-section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    color: #c084fc;
+    margin-bottom: 4px;
+    font-weight: 700;
+}
+
+.games-grid {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.game-select-btn {
+    flex: 1;
+    padding: 4px;
+    background: rgba(30, 30, 50, 0.6);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+}
+
+.game-select-btn.selected {
+    background: rgba(139, 92, 246, 0.2);
+    border-color: #c084fc;
+    color: white;
+}
+
+.social-links-container-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.social-input-small {
+    width: 100%;
+    padding: 6px 10px;
+    background: rgba(20,20,30,0.8);
+    border: 1px solid rgba(139,92,246,0.2);
+    border-radius: 6px;
+    color: white;
+    font-size: 13px;
+}
+
+.logout-btn-cyber {
+    margin-top: 8px;
+    width: 100%;
+    padding: 8px;
+    border: 2px solid #ef4444;
+    border-radius: 12px;
+    background: transparent;
+    color: #ef4444;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.leaderboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.leaderboard-title {
+    font-size: 14px;
+    color: #c084fc;
+    font-weight: 700;
+}
+
+.admin-add-btn {
+    display: none;
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid #ef4444;
+    color: #f87171;
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.leaderboard-container {
+    background: rgba(26, 26, 46, 0.4);
+    border-radius: 16px;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    padding: 8px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.leaderboard-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    background: rgba(30, 30, 54, 0.5);
+    border: 1px solid rgba(139, 92, 246, 0.1);
+}
+
+.leaderboard-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rank-number {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    width: 15px;
+    color: #94a3b8;
+}
+
+.rank-1 { color: #ffd700 !important; }
+.rank-2 { color: #c0c0c0 !important; }
+.rank-3 { color: #cd7f32 !important; }
+
+.player-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.player-name-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.player-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.tier-tag {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 4px;
+}
+.tier-grandmaster { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+.tier-master { background: rgba(234, 179, 8, 0.15); color: #fde047; }
+.tier-ace { background: rgba(6, 182, 212, 0.15); color: #67e8f9; }
+.tier-challenger { background: rgba(139, 92, 246, 0.15); color: #c084fc; }
+
+.ht-tag {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 6px;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    background: rgba(17, 17, 34, 0.6);
+    color: #b4b4d3;
+}
+
+.row-owner {
+    border-color: rgba(239, 68, 68, 0.4);
+    background: rgba(239, 68, 68, 0.06);
+}
+.row-owner .player-name { color: #f87171; }
+.leaderboard-crown { width: 14px; height: 14px; }
+.rank-badge-icon { width: 15px; height: 15px; }
+
+/* Modal (Profil Detay Penceresi) */
+.profile-modal {
+    display: none;
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(5, 5, 10, 0.95);
+    backdrop-filter: blur(8px);
+    z-index: 300;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.modal-content {
+    background: rgba(22, 22, 44, 0.95);
+    border: 1px solid rgba(139, 92, 246, 0.5);
+    border-radius: 20px;
+    width: 100%;
+    padding: 12px;
+    text-align: center;
+    max-height: 95%;
+    overflow-y: auto;
+}
+
+.modal-avatar-container {
+    width: 60px; height: 60px;
+    margin: 0 auto 6px auto;
+}
+
+.modal-avatar-img {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    border: 2px solid #c084fc;
+    object-fit: cover;
+}
+
+.modal-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+}
+
+.modal-bio-container {
+    background: rgba(10,10,20,0.4);
+    border: 1px dashed rgba(139,92,246,0.2);
+    border-radius: 8px;
+    padding: 6px;
+    font-size: 13px;
+    color: #b4b4d3;
+    text-align: left;
+    margin-bottom: 6px;
+}
+
+.modal-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin: 6px 0;
+    text-align: left;
+}
+
+.modal-custom-row {
+    background: rgba(10, 10, 20, 0.5);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 8px;
+    padding: 6px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
+
+.modal-social-vertical-list {
+    background: rgba(10, 10, 20, 0.5);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 8px;
+    padding: 6px;
+    margin-bottom: 5px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.modal-social-item {
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.modal-games-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.modal-game-badge {
+    background: rgba(139, 92, 246, 0.2);
+    color: white;
+    font-size: 10px;
+    padding: 1px 4px;
+    border-radius: 4px;
+}
+
+.history-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.history-dot {
+    font-size: 11px;
+    font-weight: 900;
+    padding: 1px 5px;
+    border-radius: 4px;
+}
+.dot-w { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
+.dot-l { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+
+.admin-pts-control-box {
+    display: none;
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 10px;
+    padding: 8px;
+    margin-bottom: 6px;
+    text-align: left;
+}
+.admin-pts-btn-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 5px;
+    margin-top: 5px;
+}
+.pts-btn {
+    background: rgba(30, 30, 50, 0.8);
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    color: white;
+    padding: 4px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.action-btn {
+    margin-top: 6px;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Alt Navigasyon */
+.bottom-nav {
+    position: absolute;
+    bottom: 20px; left: 20px; right: 20px;
+    display: flex; justify-content: space-between; gap: 6px;
+    background: #111122;
+    border-radius: 14px;
+    padding: 4px;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.nav-item {
+    flex: 1;
+    padding: 8px 2px; text-align: center; color: #94a3b8;
+    font-size: 11px; font-weight: 600;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer;
+}
+
+.nav-item span { font-size: 16px; margin-bottom: 2px; }
+.nav-icon { height: 16px; width: 16px; margin-bottom: 2px; }
+.nav-item.active { color: #ffffff; background: rgba(139, 92, 246, 0.2); border-radius: 10px; }
+.hidden-nav-item { display: none !important; }
+</style>
+</head>
+
+<body>
+
+<div id="mainCard" class="card">
+
+    <div id="globalAnnouncementContainer" class="announcement-container">
+        <span id="announcementText" class="announcement-glow-text">SYSTEM: active.</span>
+    </div>
+
+    <div class="logo-container">
+        <img class="logo" src="https://cdn.discordapp.com/attachments/1307676321547030621/1505324386305970256/1778967423139.png?ex=6a0e2a95&is=6a0cd915&hm=02c517d614d06b9b3f3fe6d2305c54c58d76714129ae33d0ffe5f8ad85486d28&" alt="Infinity Logo">
+    </div>
+
+    <h1>INFINITY</h1>
+
+    <div id="tournaments-tab" class="tab-content active-tab">
+        <div id="adminTournamentPanel" class="admin-tournament-panel">
+            <input type="text" id="inputTourName" placeholder="Tournament Name">
+            <div class="admin-grid-inputs">
+                <input type="number" id="inputDays" placeholder="Days">
+                <input type="number" id="inputHours" placeholder="Hours">
+            </div>
+            <input type="text" id="inputPhase" placeholder="Phase">
+            <div class="admin-grid-inputs">
+                <input type="text" id="inputTeam1" placeholder="Team 1">
+                <input type="text" id="inputTeam2" placeholder="Team 2">
+            </div>
+            <button class="action-btn" style="padding:4px; font-size:11px;" onclick="updateTournamentDetails()">UPDATE</button>
+        </div>
+
+        <div class="description">
+            Welcome to <strong>Infinity Tournament</strong>.<br> Compete and join epic leagues.
+        </div>
+        
+        <div class="live-tournament-card">
+            <div class="live-title"><div class="live-pulse"></div> LIVE ACTIVE TOURNAMENT</div>
+            <div id="liveTourName" style="font-family:'Orbitron'; font-size:14px; font-weight:900; color:#c084fc;">INFINITY LEAGUE</div>
+            <div id="liveCountdown" class="countdown-box">00d 00h 00m 00s</div>
+            
+            <div class="bracket-container">
+                <div id="liveTourPhase" class="bracket-title">Tournament Bracket</div>
+                <div class="bracket-view">
+                    <div id="liveTeam1" class="bracket-team" style="border-color:#ef4444; color:#f87171;">ItsKybu</div>
+                    <span class="bracket-vs">VS</span>
+                    <div id="liveTeam2" class="bracket-team">AydanGG</div>
+                </div>
+            </div>
+        </div>
+        <button class="action-btn" onclick="window.open('https://discord.gg/5fenWPU48', '_blank')">START Discord</button>
+    </div>
+
+    <div id="leaderboard-tab" class="tab-content">
+        <div id="ownerAnnouncementPanel" class="owner-announcement-panel">
+            <input type="text" id="announcementInput" placeholder="Broadcast message...">
+            <button class="action-btn" style="padding:4px; font-size:11px;" onclick="publishAnnouncement()">BROADCAST</button>
+        </div>
+
+        <div class="leaderboard-header">
+            <span class="leaderboard-title">TOP CHALLENGERS</span>
+            <button id="adminAddBtn" class="admin-add-btn" onclick="openAddPlayerModal()">+ ADD</button>
+        </div>
+        
+        <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="playerSearchInput" class="search-input" placeholder="Search player..." oninput="renderLeaderboard()">
+        </div>
+        <div id="leaderboardList" class="leaderboard-container"></div>
+    </div>
+
+    <div id="register-tab" class="tab-content">
+        <div id="register-form-wrapper">
+            <div class="form-group"><label>USERNAME</label><input type="text" id="reg-username" placeholder="Username"></div>
+            <div class="form-group"><label>EMAIL</label><input type="email" id="reg-email" placeholder="Email"></div>
+            <div class="form-group"><label>PASSWORD</label><input type="password" id="reg-password" placeholder="••••••••"></div>
+            <button class="action-btn" onclick="handleRegister()">CREATE ACCOUNT</button>
+            <div class="form-toggle-text">Already have an account? <span onclick="toggleForm('login')">Log In</span></div>
+        </div>
+        <div id="login-form-wrapper" style="display: none;">
+            <div class="form-group"><label>EMAIL OR USERNAME</label><input type="text" id="login-identifier" placeholder="Username or Email"></div>
+            <div class="form-group"><label>PASSWORD</label><input type="password" id="login-password" placeholder="••••••••"></div>
+            <button class="action-btn" onclick="handleLogin()">LOG IN</button>
+            <div class="form-toggle-text">Don't have an account? <span onclick="toggleForm('register')">Register</span></div>
+        </div>
+    </div>
+
+    <div id="profile-tab" class="tab-content">
+        <div class="profile-view">
+            <div class="cyber-card-header">
+                <div class="avatar-upload" onclick="document.getElementById('imageInput').click()">
+                    <img id="avatarDisplay" class="avatar-preview" src="https://cdn.discordapp.com/attachments/1307676321547030621/1506555325518450708/552721.png?ex=6a0eb07c&is=6a0d5efc&hm=ef6cbfc4de3d9c1011b7aa05ed9a776459980929c8212a2f53ac1bf38ff461e4&" alt="Profile">
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                </div>
+                <div id="profile-name" class="profile-name">Guest Player</div>
+                <div id="profile-email" class="profile-email-text">Please sign up to activate</div>
+                <span id="profileBadge" class="badge badge-challenger"><span id="badgeText">CHALLENGER</span></span>
+            </div>
+
+            <div class="profile-stats-panel">
+                <div class="cyber-stat-box"><div class="stat-label">total pts</div><div id="profileTotalPts" class="stat-value">0</div></div>
+                <div class="cyber-stat-box"><div class="stat-label">ht rank</div><div id="profileHtRank" class="stat-value">GUEST</div></div>
+                <div class="cyber-stat-box"><div class="stat-label">tourneys</div><div id="profileTourneysCount" class="stat-value">0</div></div>
+            </div>
+
+            <div class="profile-custom-section">
+                <div class="profile-section-title">BIOGRAPHY</div>
+                <input type="text" id="profileBioField" placeholder="Edit biography..." style="width:100%; padding:6px; background:rgba(20,20,30,0.8); border:1px solid rgba(139,92,246,0.2); border-radius:6px; color:white; margin-bottom:8px;" oninput="saveProfileCustoms()">
+
+                <div class="profile-section-title">MATCH HISTORY (Max 6 e.g: W,W,L)</div>
+                <input type="text" id="profileHistoryField" placeholder="W,W,L,W,L,W" style="width:100%; padding:6px; background:rgba(20,20,30,0.8); border:1px solid rgba(139,92,246,0.2); border-radius:6px; color:white; margin-bottom:8px;" oninput="saveProfileCustoms()">
+
+                <div class="profile-section-title">FAVORITE GAMES</div>
+                <div class="games-grid">
+                    <div id="game-val" class="game-select-btn" onclick="toggleGameSelect('val')">VAL</div>
+                    <div id="game-pubg" class="game-select-btn" onclick="toggleGameSelect('pubg')">PUBG</div>
+                    <div id="game-lol" class="game-select-btn" onclick="toggleGameSelect('lol')">LOL</div>
+                    <div id="game-mlbb" class="game-select-btn" onclick="toggleGameSelect('mlbb')">MLBB</div>
+                </div>
+
+                <div class="profile-section-title">SOCIAL NETWORKS</div>
+                <div class="social-links-container-vertical">
+                    <input type="text" id="socialDiscord" class="social-input-small" placeholder="Discord Tag" oninput="saveProfileCustoms()">
+                    <input type="text" id="socialYoutube" class="social-input-small" placeholder="YouTube URL" oninput="saveProfileCustoms()">
+                    <input type="text" id="socialTwitch" class="social-input-small" placeholder="Twitch URL" oninput="saveProfileCustoms()">
+                </div>
+            </div>
+            <button id="logoutBtn" class="logout-btn-cyber" style="display:none;" onclick="logoutUser()">LOG OUT</button>
+        </div>
+    </div>
+
+    <div id="profileModal" class="profile-modal" onclick="document.getElementById('profileModal').style.display='none'">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-avatar-container"><img id="modalAvatarImg" class="modal-avatar-img" src="" alt="Avatar"></div>
+            <div id="modalName" class="modal-name">Username</div>
+            <div id="modalBio" class="modal-bio-container">No bio.</div>
+
+            <div class="modal-stats">
+                <div class="stat-box"><div class="stat-label">RANK RATING</div><div id="modalRank" class="stat-value">-</div></div>
+                <div class="stat-box"><div class="stat-label">TIER</div><div id="modalTier" class="stat-value">-</div></div>
+                <div class="stat-box"><div class="stat-label">SCORE</div><div id="modalPts" class="stat-value">0 PTS</div></div>
+                <div class="stat-box"><div class="stat-label">SYSTEM RANK</div><div id="modalSystemRank" class="stat-value">PLAYER</div></div>
+            </div>
+
+            <div id="adminPtsControlBox" class="admin-pts-control-box">
+                <div style="font-family:'Orbitron'; font-size:10px; color:#c084fc; font-weight:700; margin-bottom:5px;">PTS CONTROL</div>
+                <div style="display:flex; gap:5px; margin-bottom:5px;">
+                    <input type="number" id="adminManualPtsInput" style="flex:1; padding:4px; background:#14141e; border:1px solid rgba(139,92,246,0.3); border-radius:6px; color:white; font-size:12px;">
+                    <button class="pts-btn" onclick="setManualPts()">SET</button>
+                </div>
+                <div class="admin-pts-btn-group">
+                    <button class="pts-btn" style="color:#10b981;" onclick="adjustPlayerPts(25)">+25</button>
+                    <button class="pts-btn" style="color:#10b981;" onclick="adjustPlayerPts(50)">+50</button>
+                    <button class="pts-btn" style="color:#ef4444;" onclick="adjustPlayerPts(-25)">-25</button>
+                </div>
+            </div>
+
+            <div class="modal-custom-row"><span>GAMES:</span><div id="modalGamesContainer" class="modal-games-list"></div></div>
+
+            <div class="modal-social-vertical-list">
+                <div class="modal-social-item"><span>Discord:</span><span id="modalSocialDiscord">-</span></div>
+                <div class="modal-social-item"><span>YouTube:</span><span id="modalSocialYoutube">-</span></div>
+                <div class="modal-social-item"><span>Twitch:</span><span id="modalSocialTwitch">-</span></div>
+            </div>
+
+            <div class="modal-custom-row"><span>HISTORY:</span><div id="modalMatchHistory" class="history-dots"></div></div>
+            
+            <button id="modalRankBtn" style="display:none;" class="action-btn" onclick="changePlayerRank()">CHANGE RANK & HISTORY</button>
+            <button id="modalKickBtn" style="display:none;" class="logout-btn-cyber" onclick="kickPlayerFromLeaderboard()">KICK PLAYER</button>
+            <button class="action-btn" onclick="document.getElementById('profileModal').style.display='none'">CLOSE</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div id="nav-tournaments" class="nav-item active" onclick="switchTab('tournaments-tab', this)">
+            <img class="nav-icon" src="https://cdn.discordapp.com/attachments/1307676321547030621/1506555324805419089/9743492.png?ex=6a0eb07b&is=6a0d5efb&hm=c57acb521560d720aac384da23366e61439d16f0e80b6b15b64788455b024101&" alt="Tournaments">Tournaments
+        </div>
+        <div id="nav-leaderboard" class="nav-item" onclick="switchTab('leaderboard-tab', this)">
+            <img class="nav-icon" src="https://cdn.discordapp.com/attachments/1307676321547030621/1506555325178839080/1152927.png?ex=6a0eb07b&is=6a0d5efb&hm=42ef6ae6fe4b04e9cd4d7979d502305d7a7dbfd4c566dad3c57aa8676f078a19&" alt="Leaderboard">Leaderboard
+        </div>
+        <div id="nav-register" class="nav-item" onclick="switchTab('register-tab', this)">
+            <img class="nav-icon" src="https://cdn.discordapp.com/attachments/1307676321547030621/1506555325853991023/16206813.png?ex=6a0eb07c&is=6a0d5efc&hm=abe84449490b657b7022dbb79c45756796aa617a877394b233330efb7cb61086&" alt="Register">Register
+        </div>
+        <div id="nav-profile" class="nav-item" onclick="switchTab('profile-tab', this)">
+            <img id="menuProfileIcon" class="nav-icon" src="https://cdn.discordapp.com/attachments/1307676321547030621/1506555325518450708/552721.png?ex=6a0eb07c&is=6a0d5efc&hm=ef6cbfc4de3d9c1011b7aa05ed9a776459980929c8212a2f53ac1bf38ff461e4&" alt="Profile">Profile
+        </div>
+    </div>
+
+</div>
+
+<script>
+// Yeni Boş Profil Resmi Linki Tanımlandı
+const defaultAvatar = "https://cdn.discordapp.com/attachments/1307676321547030621/1506555325518450708/552721.png?ex=6a0eb07c&is=6a0d5efc&hm=ef6cbfc4de3d9c1011b7aa05ed9a776459980929c8212a2f53ac1bf38ff461e4&";
+
+const rankIcons = {
+    owner: "https://cdn.discordapp.com/attachments/1307676321547030621/1505332477323907142/6941697.png?ex=6a0e321e&is=6a0ce09e&hm=9d33c5ef06c6bf123328ee6942a34400a9c2744a4c0e7f211afa6b7064916825&",
+    admin: "https://cdn.discordapp.com/attachments/1307676321547030621/1505342632832794785/15468458.png?ex=6a0e3b93&is=6a0cea13&hm=aa2dadaa99915ce68363c9625bda0b58494527a845a17d329c267bf02ba7a09f&",
+    mod: "https://cdn.discordapp.com/attachments/1307676321547030621/1505342902661025822/929429.png?ex=6a0e3bd3&is=6a0cea53&hm=3465f41cac01311e459ec85d4c604d551cdb05672d456dc5985dc275e3d9f158&"
+};
+
+const gameNamesMapping = { val: "VALORANT", pubg: "PUBG", lol: "LOL", mlbb: "MLBB" };
+
+const initialLeaderboard = [
+    { name: "ItsKybu", pts: 900, isOwner: true, customRank: "OWNER", avatar: defaultAvatar, bio: "Infinity Founder.", selectedGames: ["val", "lol"], socials: { discord: "itskybu", youtube: "", twitch: "" }, history: ["W", "W", "W", "W", "L", "W"] },
+    { name: "AyxanGG", pts: 899, customRank: "PLAYER", avatar: defaultAvatar, bio: "", selectedGames: ["pubg"], socials: { discord: "", youtube: "", twitch: "" }, history: ["W", "L", "W", "L", "W", "L"] }
+];
+
+let selectedPlayerName = ""; 
+let currentLoggedInUser = "";
+let selectedProfileGames = [];
+let countdownInterval;
+
+let tournamentData = { name: "INFINITY LEAGUE S3", phase: "Semi-Finals", days: 2, hours: 13, minutes: 59, seconds: 11, team1: "AyxanGG", team2: "ItsKybu" };
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (!localStorage.getItem('infinity_leaderboard')) {
+        localStorage.setItem('infinity_leaderboard', JSON.stringify(initialLeaderboard));
+    }
+    const savedTour = localStorage.getItem('infinity_tournament_data');
+    if(savedTour) tournamentData = JSON.parse(savedTour);
+    applyTournamentDOM();
+    renderLeaderboard();
+    startCountdown();
+});
+
+function applyTournamentDOM() {
+    document.getElementById('liveTourName').innerText = tournamentData.name;
+    document.getElementById('liveTourPhase').innerText = `Tournament Bracket (${tournamentData.phase})`;
+    document.getElementById('liveTeam1').innerText = tournamentData.team1;
+    document.getElementById('liveTeam2').innerText = tournamentData.team2;
+}
+
+function startCountdown() {
+    if(countdownInterval) clearInterval(countdownInterval);
+    countdownInterval = setInterval(() => {
+        if(tournamentData.seconds > 0) tournamentData.seconds--;
+        else {
+            tournamentData.seconds = 59;
+            if(tournamentData.minutes > 0) tournamentData.minutes--;
+            else {
+                tournamentData.minutes = 59;
+                if(tournamentData.hours > 0) tournamentData.hours--;
+                else {
+                    tournamentData.hours = 23;
+                    if(tournamentData.days > 0) tournamentData.days--;
+                    else clearInterval(countdownInterval);
+                }
+            }
+        }
+        document.getElementById('liveCountdown').innerText = `${String(tournamentData.days).padStart(2,'0')}d ${String(tournamentData.hours).padStart(2,'0')}h ${String(tournamentData.minutes).padStart(2,'0')}m ${String(tournamentData.seconds).padStart(2,'0')}s`;
+    }, 1000);
+}
+
+function switchTab(tabId, element) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active-tab'));
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active-tab');
+    element.classList.add('active');
+}
+
+function toggleForm(formType) {
+    document.getElementById('register-form-wrapper').style.display = formType === 'login' ? 'none' : 'block';
+    document.getElementById('login-form-wrapper').style.display = formType === 'login' ? 'block' : 'none';
+}
+
+function toggleGameSelect(gameId) {
+    const btn = document.getElementById(`game-${gameId}`);
+    if (btn.classList.contains('selected')) {
+        btn.classList.remove('selected');
+        selectedProfileGames = selectedProfileGames.filter(g => g !== gameId);
+    } else {
+        btn.classList.add('selected');
+        selectedProfileGames.push(gameId);
+    }
+    saveProfileCustoms();
+}
+
+function saveProfileCustoms() {
+    if(!currentLoggedInUser) return;
+    const bioValue = document.getElementById('profileBioField').value;
+    const dcValue = document.getElementById('socialDiscord').value;
+    const ytValue = document.getElementById('socialYoutube').value;
+    const twValue = document.getElementById('socialTwitch').value;
+    let historyValue = document.getElementById('profileHistoryField').value.trim().toUpperCase();
+    let historyArray = historyValue ? historyValue.split(',').map(s => s.trim()).filter(s => s === 'W' || s === 'L') : ["W","W","L","W","L","W"];
+    
+    let usersList = JSON.parse(localStorage.getItem('infinity_users_list')) || [];
+    usersList = usersList.map(u => {
+        if(u.username.toLowerCase() === currentLoggedInUser.toLowerCase()) {
+            u.bio = bioValue; u.selectedGames = selectedProfileGames; u.socials = { discord: dcValue, youtube: ytValue, twitch: twValue }; u.history = historyArray.slice(0,6);
+        }
+        return u;
+    });
+    localStorage.setItem('infinity_users_list', JSON.stringify(usersList));
+
+    let savedList = JSON.parse(localStorage.getItem('infinity_leaderboard')) || [];
+    savedList = savedList.map(p => {
+        if(p.name.toLowerCase() === currentLoggedInUser.toLowerCase()) {
+            p.bio = bioValue; p.selectedGames = selectedProfileGames; p.socials = { discord: dcValue, youtube: ytValue, twitch: twValue }; p.history = historyArray.slice(0,6);
+        }
+        return p;
+    });
+    localStorage.setItem('infinity_leaderboard', JSON.stringify(savedList));
+}
+
+function getTierInfo(pts) {
+    if (pts >= 300) return { title: "GRANDMASTER", class: "tier-grandmaster" };
+    if (pts >= 170) return { title: "MASTER", class: "tier-master" };
+    if (pts >= 70)  return { title: "ACE", class: "tier-ace" };
+    return { title: "CHALLENGER", class: "tier-challenger" };
+}
+
+function renderLeaderboard() {
+    const listContainer = document.getElementById('leaderboardList');
+    const searchQuery = document.getElementById('playerSearchInput').value.trim().toLowerCase();
+    let savedList = JSON.parse(localStorage.getItem('infinity_leaderboard')) || [];
+    
+    savedList = savedList.filter(player => player.name && player.name.trim() !== "").sort((a, b) => b.pts - a.pts);
+    if (searchQuery !== "") savedList = savedList.filter(player => player.name.toLowerCase().includes(searchQuery));
+
+    listContainer.innerHTML = ""; 
+    savedList.forEach((player, index) => {
+        const rankNum = index + 1;
+        const tier = getTierInfo(player.pts);
+        let rowClass = (player.isOwner || player.name.toLowerCase() === "itskybu") ? "leaderboard-row row-owner" : "leaderboard-row";
+        let rankStyleClass = rankNum <= 3 ? `rank-${rankNum}` : "";
+        let customRankIconHtml = "";
+        
+        if (player.name.toLowerCase() === "itskybu" || player.customRank === "OWNER") {
+            customRankIconHtml = `<img class="leaderboard-crown" src="${rankIcons.owner}">`;
+        } else if (player.customRank === "ADMIN") {
+            customRankIconHtml = `<img class="rank-badge-icon" src="${rankIcons.admin}">`;
+        } else if (player.customRank === "MOD") {
+            customRankIconHtml = `<img class="rank-badge-icon" src="${rankIcons.mod}">`;
+        }
+
+        const row = document.createElement('div');
+        row.className = rowClass;
+        row.innerHTML = `
+            <div class="leaderboard-left">
+                <span class="rank-number ${rankStyleClass}">${rankNum}</span>
+                <div class="player-info">
+                    <div class="player-name-wrapper">${customRankIconHtml}<span class="player-name">${player.name}</span></div>
+                    <span class="tier-tag ${tier.class}">${tier.title}</span>
+                </div>
+            </div>
+            <span class="ht-tag">${player.pts} PTS</span>
+        `;
+        row.querySelector('.player-name-wrapper').addEventListener('click', () => {
+            showPlayerProfile(player.name, player.pts, "HT"+rankNum, tier.title, player.avatar||defaultAvatar, player.customRank||'PLAYER', player.selectedGames||[], player.socials||{}, player.history||["W"], player.bio||"");
+        });
+        listContainer.appendChild(row);
+    });
+}
+
+function showPlayerProfile(name, pts, rank, tier, avatarUrl, customRank, selectedGames, socials, historyArray, bioText) {
+    selectedPlayerName = name; 
+    document.getElementById('modalName').innerText = name;
+    document.getElementById('modalRank').innerText = rank;
+    document.getElementById('modalTier').innerText = tier;
+    document.getElementById('modalPts').innerText = pts + " PTS";
+    document.getElementById('modalAvatarImg').src = avatarUrl;
+    document.getElementById('modalBio').innerText = bioText || "No bio.";
+
+    const gamesContainer = document.getElementById('modalGamesContainer');
+    gamesContainer.innerHTML = "";
+    selectedGames.forEach(g => {
+        gamesContainer.innerHTML += `<span class="modal-game-badge">${gameNamesMapping[g]||g}</span>`;
+    });
+
+    document.getElementById('modalSocialDiscord').innerText = socials.discord || "-";
+    document.getElementById('modalSocialYoutube').innerText = socials.youtube || "-";
+    document.getElementById('modalSocialTwitch').innerText = socials.twitch || "-";
+
+    const historyContainer = document.getElementById('modalMatchHistory');
+    historyContainer.innerHTML = "";
+    historyArray.slice(0,6).forEach(m => {
+        historyContainer.innerHTML += `<span class="history-dot ${m==='W'?'dot-w':'dot-l'}">${m}</span>`;
+    });
+
+    if(currentLoggedInUser.toLowerCase() === "itskybu") {
+        document.getElementById('modalKickBtn').style.display = "block";
+        document.getElementById('modalRankBtn').style.display = "block";
+        document.getElementById('adminPtsControlBox').style.display = "block";
+        document.getElementById('adminManualPtsInput').value = pts;
+    } else {
+        document.getElementById('modalKickBtn').style.display = "none";
+        document.getElementById('modalRankBtn').style.display = "none";
+        document.getElementById('adminPtsControlBox').style.display = "none";
+    }
+    document.getElementById('profileModal').style.display = "flex";
+}
+
+function adjustPlayerPts(amount) {
+    let savedList = JSON.parse(localStorage.getItem('infinity_leaderboard')) || [];
+    let p = savedList.find(player => player.name.toLowerCase() === selectedPlayerName.toLowerCase());
+    if (p) {
+        p.pts = Math.max(0, (p.pts || 0) + amount);
+        localStorage.setItem('infinity_leaderboard', JSON.stringify(savedList));
+        document.getElementById('modalPts').innerText = p.pts + " PTS";
+        renderLeaderboard();
+    }
+}
+
+function setManualPts() {
+    const val = parseInt(document.getElementById('adminManualPtsInput').value);
+    if(isNaN(val) || val < 0) return;
+    let savedList = JSON.parse(localStorage.getItem('infinity_leaderboard')) || [];
+    let p = savedList.find(player => player.name.toLowerCase() === selectedPlayerName.toLowerCase());
+    if (p) {
+        p.pts = val;
+        localStorage.setItem('infinity_leaderboard', JSON.stringify(savedList));
+        document.getElementById('modalPts').innerText = p.pts + " PTS";
+        renderLeaderboard();
+    }
+}
+
+function kickPlayerFromLeaderboard() {
+    if (confirm("Remove player?")) {
+        let savedList = JSON.parse(localStorage.getItem('infinity_leaderboard')) || [];
+        savedList = savedList.filter(p => p.name.toLowerCase() !== selectedPlayerName.toLowerCase());
+        localStorage.setItem('infinity_leaderboard', JSON.stringify(savedList));
+        renderLeaderboard();
+        document.getElementById('profileModal').style.display = 'none';
+    }
+}
+
+function handleRegister() {
+    const u = document.getElementById('reg-username').value.trim();
+    const e = document.getElementById('reg-email').value.trim();
+    const p = document.getElementById('reg-password').value;
+    if(!u || !e || !p) return alert("Fill fields!");
+
+    let list = JSON.parse(localStorage.getItem('infinity_users_list')) || [];
+    list.push({ username: u, email: e, password: p, bio: "", selectedGames: [], socials: {}, history: ["W","W","L"] });
+    localStorage.setItem('infinity_users_list', JSON.stringify(list));
+    alert("Registered successfully!");
+    loginSession({ username: u, email: e, bio: "", selectedGames: [], socials: {}, history: ["W","W","L"] });
+}
+
+function handleLogin() {
+    const id = document.getElementById('login-identifier').value.trim().toLowerCase();
+    const pass = document.getElementById('login-password').value;
+    let list = JSON.parse(localStorage.getItem('infinity_users_list')) || [];
+    
+    // Admin Backdoor
+    if(id === "itskybu") {
+        let adminUser = list.find(u => u.username.toLowerCase() === "itskybu") || { username: "ItsKybu", email: "admin@infinity.com", bio: "Founder", selectedGames: [], socials: {}, history: ["W"] };
+        loginSession(adminUser);
+        return;
+    }
+
+    const found = list.find(u => (u.username.toLowerCase() === id || u.email.toLowerCase() === id) && u.password === pass);
+    if(found) loginSession(found);
+    else alert("Wrong credentials!");
+}
+
+function loginSession(u) {
+    currentLoggedInUser = u.username;
+    document.getElementById('profile-name').innerText = u.username;
+    document.getElementById('profile-email').innerText = u.email || "";
+    document.getElementById('logoutBtn').style.display = 'block';
+    document.getElementById('nav-register').classList.add('hidden-nav-item');
+
+    document.getElementById('profileBioField').value = u.bio || "";
+    document.getElementById('profileHistoryField').value = u.history ? u.history.join(',') : "W,L";
+    
+    if(u.username.toLowerCase() === "itskybu") {
+        document.getElementById('badgeText').innerText = "OWNER";
+        document.getElementById('profileBadge').className = "badge badge-owner";
+        document.getElementById('adminAddBtn').style.display = "block";
+        document.getElementById('adminTournamentPanel').style.display = "block";
+    }
+    switchTab('profile-tab', document.getElementById('nav-profile'));
+}
+
+function logoutUser() {
+    currentLoggedInUser = "";
+    document.getElementById('logoutBtn').style.display = 'none';
+    document.getElementById('nav-register').classList.remove('hidden-nav-item');
+    document.getElementById('adminAddBtn').style.display = "none";
+    document.getElementById('adminTournamentPanel').style.display = "none";
+    switchTab('tournaments-tab', document.getElementById('nav-tournaments'));
+}
+</script>
+</body>
+</html>
