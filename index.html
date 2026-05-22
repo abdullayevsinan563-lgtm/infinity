@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infinity Tournament Siber Hub</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: radial-gradient(circle at center, #140e28 0%, #05050a 100%);
+    font-family: 'Rajdhani', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px 10px;
+}
+
+.card {
+    width: 100%;
+    max-width: 400px;
+    height: 680px;
+    background: rgba(17, 17, 34, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    border-radius: 24px;
+    padding: 20px 20px 95px 20px;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 
+                0 0 40px rgba(139, 92, 246, 0.25);
+    color: white;
+    z-index: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Üstten Aşağı Kayan Bildirim Paneli */
+.announcement-container {
+    position: absolute;
+    top: -80px;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(180deg, rgba(139, 92, 246, 0.25) 0%, rgba(17, 17, 34, 0.95) 100%);
+    border-bottom: 2px solid #8b5cf6;
+    padding: 10px 20px;
+    z-index: 200;
+    box-shadow: 0 5px 20px rgba(139, 92, 246, 0.3);
+    transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.announcement-container.slide-down {
+    top: 0;
+}
+
+.announcement-glow-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.announcement-icon {
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
+}
+
+.logo-container {
+    position: relative;
+    width: 80px;
+    margin: 0 auto;
+}
+
+.logo {
+    width: 100%;
+    display: block;
+    filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.6));
+}
+
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    text-align: center;
+    margin-top: 5px;
+    color: #ffffff;
+    font-size: 24px;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px rgba(192, 132, 252, 0.6);
+}
+
+.tab-content {
+    display: none;
+    margin-top: 10px;
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 2px;
+}
+
+.tab-content::-webkit-scrollbar {
+    width: 4px;
+}
+.tab-content::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.3);
+    border-radius: 10px;
+}
+
+.tab-content.active-tab {
+    display: block;
+}
+
+.admin-tournament-panel {
+    display: none;
+    background: rgba(139, 92, 246, 0.08);
+    border: 1px dashed rgba(139, 92, 246, 0.4);
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+.admin-tournament-panel input {
+    width: 100%;
+    padding: 6px 10px;
+    background: rgba(20, 20, 30, 0.8);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 6px;
+    color: white;
+    font-size: 13px;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+.admin-grid-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.live-tournament-card {
+    background: rgba(26, 26, 46, 0.6);
+    border: 1px solid rgba(192, 132, 252, 0.3);
+    border-radius: 16px;
+    padding: 15px;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.live-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    color: #c084fc;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.live-pulse {
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    animation: pulseGlow 1.5s infinite alternate;
+}
+
+@keyframes pulseGlow {
+    0% { transform: scale(0.9); opacity: 0.6; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    100% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 8px 4px rgba(239, 68, 68, 0); }
+}
+
+.countdown-box {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    color: #ffffff;
+    background: rgba(17, 17, 34, 0.8);
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    margin-bottom: 15px;
+}
+
+.bracket-container {
+    background: rgba(10, 10, 20, 0.6);
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 12px;
+    border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.bracket-title {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.bracket-view {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+}
+
+.bracket-team {
+    background: rgba(30, 30, 55, 0.8);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    padding: 4px 8px;
+    border-radius: 5px;
+    width: 100px;
+    text-align: center;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bracket-vs {
+    font-family: 'Orbitron', sans-serif;
+    color: #c084fc;
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.description {
+    text-align: center;
+    color: #b4b4d3;
+    line-height: 1.5;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    color: #c084fc;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(20, 20, 30, 0.7);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 12px;
+    color: white;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+}
+
+.search-wrapper {
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 14px 10px 35px;
+    background: rgba(20, 20, 35, 0.7);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 10px;
+    color: white;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(192, 132, 252, 0.6);
+}
+
+.owner-announcement-panel {
+    display: none;
+    background: rgba(139, 92, 246, 0.08);
+    border: 1px dashed rgba(139, 92, 246, 0.4);
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+.owner-announcement-panel input {
+    width: 100%;
+    padding: 6px 10px;
+    background: rgba(20, 20, 30, 0.8);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 6px;
+    color: white;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.form-toggle-text {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #b4b4d3;
+}
+
+.form-toggle-text span {
+    color: #c084fc;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.profile-view {
+    text-align: center;
+    padding: 5px;
+}
+
+.cyber-card-header {
+    background: rgba(26, 26, 46, 0.5);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 16px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.avatar-upload {
+    position: relative;
+    width: 65px;
+    height: 65px;
+    margin: 0 auto 8px auto;
+    cursor: pointer;
+}
+
+.avatar-preview {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid #c084fc;
+    object-fit: cover;
+    background: #1a1a2e;
+}
+
+.profile-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    color: white;
+    font-weight: 700;
+}
+
+.profile-email-text {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-bottom: 5px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* System Rank Renkleri */
+.badge-owner { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444; }
+.badge-admin { background: rgba(234, 179, 8, 0.2); border: 1px solid #eab308; color: #eab308; }
+.badge-mod { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #3b82f6; }
+.badge-player { background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #22c55e; }
+
+/* Modal Rütbe Yazı Renkleri */
+.modal-rank-owner { color: #ef4444 !important; text-shadow: 0 0 5px rgba(239, 68, 68, 0.5); }
+.modal-rank-admin { color: #eab308 !important; text-shadow: 0 0 5px rgba(234, 179, 8, 0.5); }
+.modal-rank-mod { color: #3b82f6 !important; text-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
+.modal-rank-player { color: #22c55e !important; text-shadow: 0 0 5px rgba(34, 197, 94, 0.5); }
+
+.profile-stats-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.cyber-stat-box {
+    background: rgba(20, 20, 30, 0.6);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 10px;
+    padding: 6px;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 10px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.stat-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    color: white;
+    font-weight: 900;
+}
+
+.profile-custom-section {
+    text-align: left;
+    background: rgba(15, 15, 30, 0.6);
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.profile-section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    color: #c084fc;
+    margin-bottom: 4px;
+    font-weight: 700;
+}
+
+.games-grid {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.game-select-btn {
+    flex: 1;
+    padding: 4px;
+    background: rgba(30, 30, 50, 0.6);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+}
+
+.game-select-btn.selected {
+    background: rgba(139, 92, 246, 0.2);
+    border-color: #c084fc;
+    color: white;
+}
+
+.social-links-container-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.social-input-small {
+    width: 100%;
+    padding: 6px 10px;
+    background: rgba(20,20,30,0.8);
+    border: 1px solid rgba(139,92,246,0.2);
+    border-radius: 6px;
+    color: white;
+    font-size: 13px;
+}
+
+.logout-btn-cyber {
+    margin-top: 8px;
+    width: 100%;
+    padding: 8px;
+    border: 2px solid #ef4444;
+    border-radius: 12px;
+    background: transparent;
+    color: #ef4444;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.leaderboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.leaderboard-title {
+    font-size: 14px;
+    color: #c084fc;
+    font-weight: 700;
+}
+
+.admin-add-btn {
+    display: none;
+    background: rgba(139, 92, 246, 0.2);
+    border: 1px solid #c084fc;
+    color: #c084fc;
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.leaderboard-container {
+    background: rgba(26, 26, 46, 0.4);
+    border-radius: 16px;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    padding: 8px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.leaderboard-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    background: rgba(30, 30, 54, 0.5);
+    border: 1px solid rgba(139, 92, 246, 0.1);
+}
+
+.leaderboard-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rank-number {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    width: 15px;
+    color: #94a3b8;
+}
+
+.rank-1 { color: #ffd700 !important; }
+.rank-2 { color: #c0c0c0 !important; }
+.rank-3 { color: #cd7f32 !important; }
+
+.player-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.player-name-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.player-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.tier-tag {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 4px;
+    margin-top: 2px;
+    width: max-content;
+}
+
+/* Standart Tier Renkleri */
+.tier-grandmaster-lb { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+.tier-master-lb { background: rgba(234, 179, 8, 0.15); color: #fde047; border: 1px solid rgba(234, 179, 8, 0.3); }
+.tier-ace-lb { background: rgba(6, 182, 212, 0.15); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.3); }
+.tier-challenger-lb { background: rgba(139, 92, 246, 0.15); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.3); }
+
+/* Sağ taraftaki Puan Kutusu Tasarımı */
+.leaderboard-right-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.pts-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+/* Puanın Altındaki HT Etiketi */
+.ht-sub-tag {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    font-weight: 900;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+/* System Rank Satır Renklendirmeleri */
+.row-system-owner { border-color: rgba(239, 68, 68, 0.5); background: rgba(239, 68, 68, 0.08); }
+.row-system-owner .player-name { color: #ef4444 !important; text-shadow: 0 0 5px rgba(239, 68, 68, 0.4); }
+.row-system-owner .ht-sub-tag { color: rgba(239, 68, 68, 0.8) !important; }
+
+.row-system-admin { border-color: rgba(234, 179, 8, 0.5); background: rgba(234, 179, 8, 0.08); }
+.row-system-admin .player-name { color: #eab308 !important; text-shadow: 0 0 5px rgba(234, 179, 8, 0.4); }
+.row-system-admin .ht-sub-tag { color: rgba(234, 179, 8, 0.8) !important; }
+
+.row-system-mod { border-color: rgba(59, 130, 246, 0.5); background: rgba(59, 130, 246, 0.08); }
+.row-system-mod .player-name { color: #3b82f6 !important; text-shadow: 0 0 5px rgba(59, 130, 246, 0.4); }
+.row-system-mod .ht-sub-tag { color: rgba(59, 130, 246, 0.8) !important; }
+
+.row-system-player { border-color: rgba(34, 197, 94, 0.4); background: rgba(34, 197, 94, 0.05); }
+.row-system-player .player-name { color: #22c55e !important; }
+.row-system-player .ht-sub-tag { color: rgba(34, 197, 94, 0.8) !important; }
+
+.leaderboard-crown { width: 14px; height: 14px; object-fit: contain; }
+.rank-badge-icon { width: 14px; height: 14px; object-fit: contain; }
+
+/* Modal (Profil Detay Penceresi) */
+.profile-modal {
+    display: none;
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(5, 5, 10, 0.95);
+    backdrop-filter: blur(8px);
+    z-index: 300;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.modal-content {
+    background: rgba(22, 22, 44, 0.95);
+    border: 1px solid rgba(139, 92, 246, 0.5);
+    border-radius: 20px;
+    width: 100%;
+    padding: 12px;
+    text-align: center;
+    max-height: 95%;
+    overflow-y: auto;
+}
+
+.modal-avatar-container {
+    width: 60px; height: 60px;
+    margin: 0 auto 6px auto;
+}
+
+.modal-avatar-img {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    border: 2px solid #c084fc;
+    object-fit: cover;
+}
+
+.modal-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+}
+
+.modal-bio-container {
+    background: rgba(10,10,20,0.4);
+    border: 1px dashed rgba(139,92,246,0.2);
+    border-radius: 8px;
+    padding: 6px;
+    font-size: 13px;
+    color: #b4b4d3;
+    text-align: left;
+    margin-bottom: 6px;
+}
+
+.modal-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin: 6px 0;
+    text-align: left;
+}
+
+.stat-box {
+    background: rgba(20, 20, 30, 0.6);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 10px;
+    padding: 6px;
+}
+
+/* Tıklanınca Açılan Modal Özel Tier Yazı Renkleri */
+.text-tier-grandmaster { color: #eab308 !important; text-shadow: 0 0 5px rgba(234, 179, 8, 0.5); } /* Sarı */
+.text-tier-master { color: #3b82f6 !important; text-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }       /* Mavi */
+.text-tier-ace { color: #a855f7 !important; text-shadow: 0 0 5px rgba(168, 85, 247, 0.5); }          /* Mor */
+.text-tier-challenger { color: #22c55e !important; text-shadow: 0 0 5px rgba(34, 197, 94, 0.5); }     /* Yeşil */
+
+.modal-custom-row {
+    background: rgba(10, 10, 20, 0.5);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 8px;
+    padding: 6px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
+
+.modal-social-vertical-list {
+    background: rgba(10, 10, 20, 0.5);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 8px;
+    padding: 6px;
+    margin-bottom: 5px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.modal-social-item {
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.modal-games-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.modal-game-badge {
+    background: rgba(139, 92, 246, 0.2);
+    color: white;
+    font-size: 10px;
+    padding: 1px 4px;
+    border-radius: 4px;
+}
+
+.history-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.history-dot {
+    font-size: 11px;
+    font-weight: 900;
+    padding: 1px 5px;
+    border-radius: 4px;
+}
+.dot-w { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
+.dot-l { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+
+/* Admin Kontrol Paneli Alanı */
+.admin-pts-control-box {
+    display: none;
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 10px;
+    padding: 8px;
+    margin-bottom: 6px;
+    text-align: left;
+}
+.admin-pts-btn-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 5px;
+    margin-top: 5px;
+}
+.pts-btn {
+    background: rgba(30, 30, 50, 0.8);
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    color: white;
+    padding: 4px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.action-btn {
+    margin-top: 6px;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Alt Navigasyon */
+.bottom-nav {
+    position: absolute;
+    bottom: 20px; left: 20px; right: 20px;
+    display: flex; justify-content: space-between; gap: 6px;
+    background: #111122;
+    border-radius: 14px;
+    padding: 4px;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.nav-item {
+    flex: 1;
+    padding: 8px 2px; text-align: center; color: #94a3b8;
+    font-size: 11px; font-weight: 600;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer;
+}
+
+.nav-item span { font-size: 16px; margin-bottom: 2px; }
+.nav-icon { height: 16px; width: 16px; margin-bottom: 2px; }
+.nav-item.active { color: #ffffff; background: rgba(139, 92, 246, 0.2); border-radius: 10px; }
+.hidden-nav-item { display: none !important; }
+
+/* Add Player Modal CSS */
+.add-player-modal {
+    display: none;
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(5, 5, 10, 0.9);
+    backdrop-filter: blur(8px);
+    z-index: 400;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="mainCard" class="card">
+
+    <div id="globalAnnouncementContainer" class="announcement-container">
+        <img class="announcement-icon" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m12 3-1.912 5.886H3.877l4.904 3.562L6.87 18.334l5.13-3.728 5.13 3.728-1.912-5.886 4.904-3.562h-6.211L12 3z'/></svg>" alt="alert">
+        <div id="announcementText" class="announcement-glow-text">SYSTEM ACTIVE</div>
+    </div>
+
+    <div class="logo-container">
+        <!-- Orijinal Logo Güncellendi -->
+        <img class="logo" src="https://imgur.com/A4xjLME.png" alt="Infinity Logo">
+    </div>
+
+    <h1>INFINITY</h1>
+
+    <!-- TOURNAMENTS TAB (Eski Leagues Kısmı Değiştirildi) -->
+    <div id="tournaments-tab" class="tab-content active-tab">
+        <div id="adminTournamentPanel" class="admin-tournament-panel">
+            <input type="text" id="inputTourName" placeholder="Tournament Name">
+            <div class="admin-grid-inputs">
+                <input type="number" id="inputDays" placeholder="Days">
+                <input type="number" id="inputHours" placeholder="Hours">
+            </div>
+            <input type="text" id="inputPhase" placeholder="Phase">
+            <div class="admin-grid-inputs">
+                <input type="text" id="inputTeam1" placeholder="Team 1">
+                <input type="text" id="inputTeam2" placeholder="Team 2">
+            </div>
+            <button class="action-btn" style="padding:4px; font-size:11px;" onclick="updateTournamentDetails()">UPDATE</button>
+        </div>
+
+        <div class="description">
+            Welcome to <strong>Infinity Tournament</strong>.<br> Compete and join epic tournaments.
+        </div>
+
+        <div class="live-tournament-card">
+            <div class="live-title"><div class="live-pulse"></div> LIVE ACTIVE TOURNAMENT</div>
+            <div id="liveTourName" style="font-family:'Orbitron'; font-size:14px; font-weight:900; color:#c084fc;">INFINITY LEAGUE</div>
+            <div id="liveCountdown" class="countdown-box">00d 00h 00m 00s</div>
+            
+            <div class="bracket-container">
+                <div id="liveTourPhase" class="bracket-title">Tournament Bracket</div>
+                <div class="bracket-view">
+                    <div id="liveTeam1" class="bracket-team" style="border-color:#ef4444; color:#f87171;">ItsKybu</div>
+                    <span class="bracket-vs">VS</span>
+                    <div id="liveTeam2" class="bracket-team">AyxanGG</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="action-btn" onclick="window.open('https://discord.gg/5fenWPU48', '_blank')">START Discord</button>
+    </div>
+
+    <!-- LEADERBOARD TAB -->
+    <div id="leaderboard-tab" class="tab-content">
+        <div id="ownerAnnouncementPanel" class="owner-announcement-panel">
+            <input type="text" id="announcementInput" placeholder="Broadcast a global alert...">
+            <button class="action-btn" style="padding:4px; font-size:11px;" onclick="publishAnnouncement()">BROADCAST ALERT</button>
+        </div>
+
+        <div class="leaderboard-header">
+            <span class="leaderboard-title">TOP CHALLENGERS</span>
+            <button id="adminAddBtn" class="admin-add-btn" onclick="openAddPlayerModal()">+ ADD</button>
+        </div>
+
+        <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="playerSearchInput" class="search-input" placeholder="Search player..." oninput="renderLeaderboard()">
+        </div>
+
+        <div id="leaderboardList" class="leaderboard-container"></div>
+    </div>
+
+    <!-- REGISTER/LOGIN TAB -->
+    <div id="register-tab" class="tab-content">
+        <div id="register-form-wrapper">
+            <div class="form-group"><label>USERNAME</label><input type="text" id="reg-username" placeholder="Username"></div>
+            <div class="form-group"><label>EMAIL</label><input type="email" id="reg-email" placeholder="Email"></div>
+            <div class="form-group"><label>PASSWORD</label><input type="password" id="reg-password" placeholder="••••••••"></div>
+            <button class="action-btn" onclick="handleRegister()">CREATE ACCOUNT</button>
+            <div class="form-toggle-text">Already have an account? <span onclick="toggleForm('login')">Log In</span></div>
+        </div>
+
+        <div id="login-form-wrapper" style="display: none;">
+            <div class="form-group"><label>EMAIL OR USERNAME</label><input type="text" id="login-identifier" placeholder="Username or Email"></div>
+            <div class="form-group"><label>PASSWORD</label><input type="password" id="login-password" placeholder="••••••••"></div>
+            <button class="action-btn" onclick="handleLogin()">LOG IN</button>
+            <div class="form-toggle-text">Don't have an account? <span onclick="toggleForm('register')">Register</span></div>
+        </div>
+    </div>
+
+    <!-- PROFILE TAB -->
+    <div id="profile-tab" class="tab-content">
+        <div class="profile-view">
+            <div class="cyber-card-header">
+                <div class="avatar-upload" onclick="document.getElementById('imageInput').click()">
+                    <!-- Varsayılan profil resmi yenilendi -->
+                    <img id="avatarDisplay" class="avatar-preview" src="https://imgur.com/TCBiY4M" alt="Profile">
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                </div>
+                <div id="profile-name" class="profile-name">Guest Player</div>
+                <div id="profile-email" class="profile-email-text">Please sign up to activate</div>
+                <span id="profileBadge" class="badge badge-player"><span id="badgeText">PLAYER</span></span>
+            </div>
+
+            <div class="profile-stats-panel">
+                <div class="cyber-stat-box"><div class="stat-label">total pts</div><div id="profileTotalPts" class="stat-value">0</div></div>
+                <div class="cyber-stat-box"><div class="stat-label">ht rank</div><div id="profileHtRank" class="stat-value">GUEST</div></div>
+                <div class="cyber-stat-box"><div class="stat-label">tourneys</div><div id="profileTourneysCount" class="stat-value">0</div></div>
+            </div>
+
+            <div class="profile-custom-section">
+                <div class="profile-section-title">BIOGRAPHY</div>
+                <input type="text" id="profileBioField" placeholder="Edit biography..." style="width:100%; padding:6px; background:rgba(20,20,30,0.8); border:1px solid rgba(139,92,246,0.2); border-radius:6px; color:white; margin-bottom:8px;" oninput="saveProfileCustoms()">
+                
+                <div class="profile-section-title">MATCH HISTORY (Max 6 e.g: W,W,L)</div>
+                <input type="text" id="profileHistoryField" placeholder="W,W,L,W,L,W" style="width:100%; padding:6px; background:rgba(20,20,30,0.8); border:1px solid rgba(139,92,246,0.2); border-radius:6px; color:white; margin-bottom:8px;" oninput="saveProfileCustoms()">
+                
+                <div class="profile-section-title">FAVORITE GAMES</div>
+                <div class="games-grid">
+                    <div id="game-val" class="game-select-btn" onclick="toggleGameSelect('val')">VAL</div>
+                    <div id="game-pubg" class="game-select-btn" onclick="toggleGameSelect('pubg')">PUBG</div>
+                    <div id="game-lol" class="game-select-btn" onclick="toggleGameSelect('lol')">LOL</div>
+                    <div id="game-mlbb" class="game-select-btn" onclick="toggleGameSelect('mlbb')">MLBB</div>
+                </div>
+
+                <div class="profile-section-title">SOCIAL NETWORKS</div>
+                <div class="social-links-container-vertical">
+                    <input type="text" id="socialDiscord" class="social-input-small" placeholder="Discord Tag" oninput="saveProfileCustoms()">
+                    <input type="text" id="socialYoutube" class="social-input-small" placeholder="YouTube URL" oninput="saveProfileCustoms()">
+                    <input type="text" id="socialTwitch" class="social-input-small" placeholder="Twitch URL" oninput="saveProfileCustoms()">
+                </div>
+            </div>
+
+            <button id="logoutBtn" class="logout-btn-cyber" style="display:none;" onclick="logoutUser()">LOG OUT</button>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION (İkon linkleri yenilendi) -->
+    <div class="bottom-nav">
+        <div id="nav-tournaments" class="nav-item active" onclick="switchTab('tournaments')">
+            <img class="nav-icon" src="https://imgur.com/pmoXWT1.png" alt="Tournaments">
+            Tournaments
+        </div>
+        <div id="nav-leaderboard" class="nav-item" onclick="switchTab('leaderboard')">
+            <img class="nav-icon" src="https://imgur.com/iHjcAlZ.png" alt="Leaderboard">
+            Leaderboard
+        </div>
+        <div id="nav-register" class="nav-item" onclick="switchTab('register')">
+            <img class="nav-icon" src="https://imgur.com/7cqB2LQ.png" alt="Register">
+            Sign In
+        </div>
+        <div id="nav-profile" class="nav-item" onclick="switchTab('profile')">
+            <img id="menuProfileIcon" class="nav-icon" src="https://imgur.com/TCBiY4M.png" alt="Profile">
+            Profile
+        </div>
+    </div>
+
+</div>
+
+<!-- DETAILED PROFILE MODAL -->
+<div id="profileModal" class="profile-modal" onclick="document.getElementById('profileModal').style.display='none'">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-avatar-container"><img id="modalAvatarImg" class="modal-avatar-img" src="" alt="Avatar"></div>
+        <div id="modalName" class="modal-name">Username</div>
+        <div id="modalBio" class="modal-bio-container">No bio specified.</div>
+        
+        <div class="modal-stats">
+            <div class="stat-box"><div class="stat-label">RANK RATING</div><div id="modalRank" class="stat-value">-</div></div>
+            <div class="stat-box"><div class="stat-label">TIER</div><div id="modalTier" class="stat-value">-</div></div>
+            <div class="stat-box"><div class="stat-label">SCORE</div><div id="modalPts" class="stat-value">0 PTS</div></div>
+            <div class="stat-box"><div class="stat-label">SYSTEM RANK</div><div id="modalSystemRank" class="stat-value">PLAYER</div></div>
+        </div>
+
+        <!-- ADMIN YÖNETİM ALANI -->
+        <div id="adminPtsControlBox" class="admin-pts-control-box">
+            <div style="font-family:'Orbitron'; font-size:10px; color:#c084fc; font-weight:700; margin-bottom:5px;">ADMIN POINTS MANAGEMENT</div>
+            <input type="number" id="inputAdminPtsAmount" placeholder="Enter amount (e.g: 5, 10...)" style="width:100%; padding:6px; background:rgba(20,20,30,0.8); border:1px solid rgba(139,92,246,0.3); border-radius:6px; color:white; font-size:13px; margin-bottom:6px;">
+            <div class="admin-pts-btn-group" style="grid-template-columns: 1fr 1fr;">
+                <button class="pts-btn" style="border-color:#22c55e; color:#22c55e;" onclick="adjustPlayerPtsCustom('add')">+ ADD PTS</button>
+                <button class="pts-btn" style="border-color:#ef4444; color:#ef4444;" onclick="adjustPlayerPtsCustom('remove')">- REMOVE PTS</button>
+            </div>
+
+            <div style="font-family:'Orbitron'; font-size:10px; color:#c084fc; font-weight:700; margin:10px 0 5px 0;">MANAGE MATCH HISTORY (W,L)</div>
+            <input type="text" id="inputAdminHistory" placeholder="e.g: W,W,L,W" style="width:100%; padding:6px; background:rgba(20,20,30,0.8); border:1px solid rgba(139,92,246,0.3); border-radius:6px; color:white; font-size:13px; margin-bottom:6px;">
+            <button class="pts-btn" style="width:100%; border-color:#8b5cf6; color:white;" onclick="updatePlayerHistoryCustom()">UPDATE HISTORY</button>
+
+            <div style="font-family:'Orbitron'; font-size:10px; color:#eab308; font-weight:700; margin:10px 0 5px 0;">MANAGE SYSTEM RANK</div>
+            <div class="admin-pts-btn-group" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+                <button class="pts-btn" onclick="changePlayerSystemRank('OWNER')">OWNER</button>
+                <button class="pts-btn" onclick="changePlayerSystemRank('ADMIN')">ADMIN</button>
+                <button class="pts-btn" onclick="changePlayerSystemRank('MOD')">MOD</button>
+                <button class="pts-btn" onclick="changePlayerSystemRank('PLAYER')">USER</button>
+            </div>
+            <button class="logout-btn-cyber" style="padding:4px; font-size:11px; margin-top:8px;" onclick="deletePlayerFromLeaderboard()">DELETE PLAYER</button>
+        </div>
+
+        <div class="modal-custom-row">
+            <span style="color:#94a3b8; font-weight:600;">Match History:</span>
+            <div id="modalHistoryDots" class="history-dots"></div>
+        </div>
+
+        <div class="modal-custom-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
+            <span style="color:#94a3b8; font-weight:600;">Favorite Games:</span>
+            <div id="modalGamesList" class="modal-games-list"></div>
+        </div>
+
+        <div class="modal-social-vertical-list">
+            <div class="modal-social-item"><span style="color:#94a3b8;">Discord:</span><span id="modalSocialDiscord" style="color:white; font-weight:600;">-</span></div>
+            <div class="modal-social-item"><span style="color:#94a3b8;">YouTube:</span><span id="modalSocialYoutube" style="color:white; font-weight:600;">-</span></div>
+            <div class="modal-social-item"><span style="color:#94a3b8;">Twitch:</span><span id="modalSocialTwitch" style="color:white; font-weight:600;">-</span></div>
+        </div>
+
+        <button class="action-btn" style="padding:6px; font-size:12px;" onclick="document.getElementById('profileModal').style.display='none'">CLOSE PROFILE</button>
+    </div>
+</div>
+
+<!-- ADMIN ADD PLAYER MODAL -->
+<div id="addPlayerModal" class="add-player-modal" onclick="document.getElementById('addPlayerModal').style.display='none'">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width:350px;">
+        <div style="font-family:'Orbitron'; color:#c084fc; font-weight:900; font-size:16px; margin-bottom:12px;">ADD NEW CHALLENGER</div>
+        <div class="form-group" style="text-align:left;"><label>PLAYER NAME</label><input type="text" id="addPlayerName" placeholder="Name"></div>
+        <div class="form-group" style="text-align:left;"><label>INITIAL POINTS</label><input type="number" id="addPlayerPts" value="0"></div>
+        <button class="action-btn" onclick="submitAddPlayer()">ADD TO LEADERBOARD</button>
+        <button class="logout-btn-cyber" style="margin-top:6px; padding:6px;" onclick="document.getElementById('addPlayerModal').style.display='none'">CANCEL</button>
+    </div>
+</div>
+
+<script>
+// Gönderdiğin İkon ve Görsel Linkleri Değişkenlere Atandı
+const defaultAvatar = "https://imgur.com/TCBiY4M.png";
+const crownIcon = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffd700' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zM5 20h14'/></svg>";
+const ownerBadgeIcon = "https://imgur.com/SYkVs10.png";
+const adminBadgeIcon = "https://imgur.com/mhmQN6V.png";
+const modBadgeIcon = "https://imgur.com/NFrcpG4.png";
+const playerBadgeIcon = "https://imgur.com/TCBiY4M.png";
+
+// OTURUM YÖNETİMİ
+let currentLoggedInUser = localStorage.getItem('currentLoggedInUser') || "";
+let currentLoggedInRank = localStorage.getItem('currentLoggedInRank') || "PLAYER";
+
+let selectedProfileNameInModal = "";
+let countdownInterval = null;
+
+const defaultLeaderboardList = [];
+
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active-tab'));
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    
+    document.getElementById(tabId + '-tab').classList.add('active-tab');
+    document.getElementById('nav-' + tabId).classList.add('active');
+    
+    if(tabId === 'leaderboard') {
+        renderLeaderboard();
+    }
+    if(tabId === 'profile') {
+        updateProfileDOMStats();
+    }
+}
+
+function toggleForm(type) {
+    if(type === 'login') {
+        document.getElementById('register-form-wrapper').style.display = 'none';
+        document.getElementById('login-form-wrapper').style.display = 'block';
+    } else {
+        document.getElementById('register-form-wrapper').style.display = 'block';
+        document.getElementById('login-form-wrapper').style.display = 'none';
+    }
+}
+
+function handleRegister() {
+    const user = document.getElementById('reg-username').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const pass = document.getElementById('reg-password').value.trim();
+    
+    if(!user || !email || !pass) {
+        alert("Please fill in all blanks.");
+        return;
+    }
+    
+    let accounts = JSON.parse(localStorage.getItem('infinity_accounts')) || [];
+    if(accounts.some(acc => acc.username.toLowerCase() === user.toLowerCase() || acc.email.toLowerCase() === email.toLowerCase())) {
+        alert("Account name or email already exists.");
+        return;
+    }
+    
+    let assignedRank = accounts.length === 0 ? "OWNER" : "PLAYER";
+    
+    const newAccount = {
+        username: user,
+        email: email,
+        password: pass,
+        rank: assignedRank,
+        avatar: defaultAvatar,
+        bio: "",
+        history: [],
+        games: [],
+        social: { discord: "", youtube: "", twitch: "" }
+    };
+    
+    accounts.push(newAccount);
+    localStorage.setItem('infinity_accounts', JSON.stringify(accounts));
+    
+    let lb = JSON.parse(localStorage.getItem('infinity_leaderboard')) || [...defaultLeaderboardList];
+    if(!lb.some(p => p.name.toLowerCase() === user.toLowerCase())) {
+        lb.push({ name: user, pts: 0, rank: assignedRank });
+        localStorage.setItem('infinity_leaderboard', JSON.stringify(lb));
+    }
+    
+    currentLoggedInUser = user;
+    currentLoggedInRank = assignedRank;
+    localStorage.setItem('currentLoggedInUser', currentLoggedInUser);
+    localStorage.setItem('currentLoggedInRank', currentLoggedInRank);
+    
+    applyLoginState();
+    switchTab('profile');
+}
+
+function handleLogin() {
+    const ident = document.getElementById('login-identifier').value.trim();
+    const pass = document.getElementById('login-password').value.trim();
+    
+    if(!ident || !pass) {
+        alert("Please fill in all credentials.");
+        return;
+    }
+    
+    let accounts = JSON.parse(localStorage.getItem('infinity_accounts')) || [];
+    
+    const match = accounts.find(acc => 
+        (acc.username.toLowerCase() === ident.toLowerCase() || acc.email.toLowerCase() === ident.toLowerCase()) && 
+        acc.password === pass
+    );
+    
+    if(!match) {
+        alert("Invalid account credentials.");
+        return;
+    }
+    
+    currentLoggedInUser = match.username;
+    currentLoggedInRank = match.rank || "PLAYER";
+    
+    localStorage.setItem('currentLoggedInUser', currentLoggedInUser);
+    localStorage.setItem('currentLoggedInRank', currentLoggedInRank);
+    
+    applyLoginState();
+    switchTab('profile');
+}
+
+function applyLoginState() {
+    let accounts = JSON.parse(localStorage.getItem('infinity_accounts')) || [];
+    const acc = accounts.find(a => a.username.toLowerCase() === currentLoggedInUser.toLowerCase());
+    
+    if(acc) {
+        document.getElementById('profile-name').innerText = acc.username;
+        document.getElementById('profile-email').innerText = acc.email;
+        document.getElementById('avatarDisplay').src = acc.avatar || defaultAvatar;
+        
+        document.getElementById('profileBioField').value = acc.bio || "";
+        document.getElementById('profileHistoryField').value = acc.history ? acc.history.join(',') : "";
+        
+        document.querySelectorAll('.game-select-btn').forEach(btn => btn.classList.remove('selected'));
+        if(acc.games) {
+            acc.games.forEach(g => {
+                const el = document.getElementById('game-' + g);
+                if(el) el.classList.add('selected');
+            });
+        }
+        
+        if(acc.social) {
+            document.getElementById('socialDiscord').value = acc.social.discord || "";
+            document.getElementById('socialYoutube').value = acc.social.youtube || "";
+            document.getElementById('socialTwitch').value = acc.social.twitch || "";
+        }
+        
+        const badgeEl = document.getElementById('profileBadge');
+        const badgeText = document.getElementById('badgeText');
+        badgeEl.className = "badge badge-" + currentLoggedInRank.toLowerCase();
+        badgeText.innerText = currentLoggedInRank;
+        
+        if(currentLoggedInRank === "ADMIN" || currentLoggedInRank === "OWNER") {
+            document.getElementById('adminTournamentPanel').style.display = "block";
+            document.getElementById('adminAddBtn').style.display = "block";
+        } else {
+            document.getElementById('adminTournamentPanel').style.display = "none";
+            document.getElementById('adminAddBtn').style.display = "none";
+        }
+        
+        if(currentLoggedInRank === "OWNER") {
+            document.getElementById('ownerAnnouncementPanel').style.display = "block";
+        } else {
+            document.getElementById('ownerAnnouncementPanel').style.display = "none";
+        }
+        
+        document.getElementById('logoutBtn').style.display = 'block';
+        document.getElementById('nav-register').classList.add('hidden-nav-item');
+        updateProfileDOMStats();
+    }
+}
+
+function logoutUser() {
+    currentLoggedInUser = "";
+    currentLoggedInRank = "PLAYER";
+    
+    localStorage.removeItem('currentLoggedInUser');
+    localStorage.removeItem('currentLoggedInRank');
+    
+    document.getElementById('logoutBtn').style.display = 'none';
+    document.getElementById('nav-register').classList.remove('hidden-nav-item');
+    document.getElementById('adminAddBtn').style.display = "none";
+    document.getElementById('adminTournamentPanel').style.display = "none";
+    document.getElementById('ownerAnnouncementPanel').style.display = "none";
+    
+    document.getElementById('avatarDisplay').src = defaultAvatar;
+    document.getElementById('menuProfileIcon').src = "https://imgur.com/TCBiY4M";
+    
+    document.getElementById('profile-name').innerText = "Guest Player";
+    document.getElementById('profile-email').innerText = "Please sign up to activate";
+    
+    const badgeEl = document.getElementById('profileBadge');
+    badgeEl.className = "badge badge-player";
+    document.getElementById('badgeText').innerText = "PLAYER";
+    
+    switchTab('register');
+}
+
+function updateProfileDOMStats() {
+    if(!currentLoggedInUser) return;
+    let lb = JSON.parse(localStorage.getItem('infinity_leaderboard')) || [...defaultLeaderboardList];
+    lb = lb.filter(p => p.name && p.name.trim() !== "").sort((a, b) => b.pts - a.pts);
+    
+    const idx = lb.findIndex(p => p.name.toLowerCase() === currentLoggedInUser.toLowerCase());
+    const pData = lb[idx];
+    
+    if(pData) {
+        document.getElementById('profileTotalPts').innerText = pData.pts;
+        document.getElementById('profileHtRank').innerText = idx !== -1 ? "HT" + (idx + 1) : "GUEST";
+        
+        let accounts = JSON.parse(localStorage.getItem('infinity_accounts')) || [];
+        const acc = accounts.find(a => a.username.toLowerCase() === currentLoggedInUser.toLowerCase());
+        document.getElementById('profileTourneysCount').innerText = (acc && acc.history) ? acc.history.length : 0;
+    }
+}
+
+function saveProfileCustoms() {
+    if(!currentLoggedInUser) return;
+    let accounts = JSON.parse(localStorage.getItem('infinity_accounts')) || [];
+    const idx = accounts.findIndex(a => a.username.toLowerCase() === currentLoggedInUser.toLowerCase());
+    
+    if(idx !== -1) {
+        accounts[idx].bio = document.getElementById('profileBioField').value;
+        
+        const histVal = document.getElementById('profileHistoryField').value;
+        accounts[idx].history = histVal ? histVal.split(',').map(s => s.trim().toUpperCase()).filter(s => s === 'W' || s === 'L') : [];
+        
+        if(!accounts[idx].social) accounts[idx].social = {};
+        accounts[idx].social.discord = document.getElementById('socialDiscord').value;
+        accounts[idx].social.youtube = document.getElementById('socialYoutube').value;
+        accounts[idx].social.twitch = document.getElementById('socialTwitch').value;
+        
+        localStorage.setItem('infinity_accounts', JSON.stringify(accounts));
+    }
+}
+
+function toggleGameSelect(game) {
+    if(!currentLoggedInUser) return;
+    const btn = document.getElementById('game-' + game);
+    btn.classList.toggle('selected');
+    
+    let accounts = JSON.parse(localStorage.getItem('infinity_accounts')) || [];
+    const idx = accounts.findIndex(a => a.username.toLowerCase() === currentLoggedInUser.toLowerCase());
+    
+    if(idx !== -1) {
+        if(!accounts[idx].games) accounts[idx].games = [];
+        if(btn.classList.contains('selected')) {
+            if(!accounts[idx].games.includes(game)) accounts[idx].games.push(game);
+        } else {
+            accounts[idx].games = accounts[idx].games.filter(g => g !== game);
+        }
+        localStorage.setItem('infinity_accounts', JSON.stringify(accounts));
+    }
+}
+
+function previewImage(event) {
+    if(!currentLoggedInUser) return;
+    const reader = new FileReader();
+    reader.onload = function() {
+        const dataURL = reader.result;
+        document.getElementById('avatarDisplay').src = dataURL;
+        
+        let accounts = JSON.parse(localStorage.getItem('infinity_accounts')) || [];
+        const idx = accounts.findIndex(a => a.username.toLowerCase() === currentLoggedInUser.toLowerCase());
+        if(idx !== -1) {
+            accounts[idx].avatar = dataURL;
+            localStorage.setItem('infinity_accounts', JSON.stringify(accounts));
+        }
+        
+        if(window.document.getElementById('menuProfileIcon')) {
+            document.getElementById('menuProfileIcon').src = dataURL;
+        }
+    };
+    reader.readAsDataURL(event.target.files[0]);
+}
+
+function renderLeaderboard() {
+    const listContainer = document.getElementById('leaderboardList');
+    const query = document.getElementById('playerSearchInput').value.toLowerCase();
+    
+    let lb = JSON.parse(localStorage.getItem('infinity_leaderboard')) || [...defaultLeaderboardList];
+    lb = lb.filter(p => p.name && p.name.trim() !== "").sort((a, b) => b.pts - a.pts);
+    
+    listContainer.innerHTML = "";
+    
+    let visibleIndex = 1;
+    lb.forEach((player) => {
+        if(query && !player.name.toLowerCase().includes(query)) return;
+        
+        let sysRank = player.rank || "PLAYER";
+        let accounts = JSON.parse(localStorage.getItem('infinity_accounts')) || [];
+        const acc = accounts.find(a => a.username.toLowerCase() === player.name.toLowerCase());
+        if(acc) sysRank = acc.rank || "PLAYER";
+        
+        let pts = player.pts;
+        let tier = "CHALLENGER";
+        let tierClass = "tier-challenger-lb";
+        
+        if(pts >= 300) { tier = "GRANDMASTER"; tierClass = "tier-grandmaster-lb"; }
+        else if(pts >= 200) { tier = "MASTER"; tierClass = "tier-master-lb"; }
+        else if(pts >= 70) { tier = "ACE"; tierClass = "tier-ace-lb"; }
+        
+        const row = document.createElement('div');
+        row.className = `leaderboard-row row-system-${sysRank.toLowerCase()}`;
+        
+        let rankLabel = `<span class="rank-number">${visibleIndex}</span>`;
+        if(visibleIndex === 1) rankLabel = `<span class="rank-number rank-1"><img class="leaderboard-crown" src="${crownIcon}" alt="1"></span>`;
+        else if(visibleIndex === 2) rankLabel = `<span class="rank-number rank-2">2</span>`;
+        else if(visibleIndex === 3) rankLabel = `<span class="rank-number rank-3">3</span>`;
+        
+        let badgeImg = playerBadgeIcon;
+        if(sysRank === "OWNER") badgeImg = ownerBadgeIcon;
+        else if(sysRank === "ADMIN") badgeImg = adminBadgeIcon;
+        else if(sysRank === "MOD") badgeImg = modBadgeIcon;
+        
+        row.innerHTML = `
+            <div class="leaderboard-left">
+                ${rankLabel}
+                <div class="player-info">
+                    <div class="player-name-wrapper" onclick="openDetailedProfileModal('${player.name}')">
+                        <img class="rank-badge-icon" src="${badgeImg}" alt="badge">
+                        <span class="player-name">${player.name}</span>
+                    </div>
+                    <span class="tier-tag ${tierClass}">${tier}</span>
+                </div>
+            </div>
+            <div class="leaderboard-right-box">
+                <span class="pts-text">${pts} PTS</span>
+                <span class="ht-sub-tag">HT${visibleIndex}</span>
+            </div>
+        `;
+        
+        listContainer.appendChild(row);
+        visibleIndex++;
+    });
+}
+
+function openDetailedProfileModal(pName) {
+    selectedProfileNameInModal = pName;
+    let lb = JSON.parse(localStorage.getItem('infinity_leaderboard')) || [...defaultLeaderboardList];
+    lb = lb.filter(p => p.name && p.name.trim() !== "").sort((a, b) => b.pts - a.pts);
+    
+    const lbIdx = lb.findIndex(p => p.name.toLowerCase() === pName.toLowerCase());
+    const pData = lb[lbIdx];
+    
+    let accounts = JSON.parse(localStorage.getItem('infinity_accounts')) || [];
+    const acc = accounts.find(a => a.username.toLowerCase() === pName.toLowerCase());
+    
+    if(!pData) return;
+    
+    let sysRank = pData.rank || "PLAYER";
+    let avatar = defaultAvatar;
+    let bio = "No biography setup yet.";
+    let history = [];
+    let games = [];
+    let social = { discord: "-", youtube: "-", twitch: "-" };
+    
+    if(acc) {
+        sysRank = acc.rank || "PLAYER";
+        avatar = acc.avatar || defaultAvatar;
+        if(acc.bio) bio = acc.bio;
+        if(acc.history) history = acc.history;
+        if(acc.games) games = acc.games;
+        if(acc.social) {
+            if(acc.social.discord) social.discord = acc.social.discord;
+            if(acc.social.youtube) social.youtube = acc.social.youtube;
+            if(acc.social.twitch) social.twitch = acc.social.twitch;
+        }
+    }
+    
+    let pts = pData.pts;
+    let tier = "CHALLENGER";
+    let tColorClass = "text-tier-challenger";
+    
+    if(pts >= 300) { tier = "GRANDMASTER"; tColorClass = "text-tier-grandmaster"; }
+    else if(pts >= 200) { tier = "MASTER"; tColorClass = "text-tier-master"; }
+    else if(pts >= 70) { tier = "ACE"; tColorClass = "text-tier-ace"; }
+    
+    document.getElementById('modalAvatarImg').src = avatar;
+    document.getElementById('modalName').innerText = pData.name;
+    document.getElementById('modalBio').innerText = bio;
+    
+    document.getElementById('modalRank').innerText = lbIdx !== -1 ? "HT" + (lbIdx + 1) : "GUEST";
+    
+    const tierEl = document.getElementById('modalTier');
+    tierEl.innerText = tier;
+    tierEl.className = "stat-value " + tColorClass;
+    
+    document.getElementById('modalPts').innerText = pts + " PTS";
+    
+    const sysRankEl = document.getElementById('modalSystemRank');
+    sysRankEl.innerText = sysRank;
+    sysRankEl.className = "stat-value modal-rank-" + sysRank.toLowerCase();
+    
+    const dotsContainer = document.getElementById('modalHistoryDots');
+    dotsContainer.innerHTML = history.length === 0 ? "<span style='color:#94a3b8;'>No history</span>" : "";
+    history.slice(0, 6).forEach(h => {
+        const s = document.createElement('span');
+        s.className = "history-dot " + (h === 'W' ? 'dot-w' : 'dot-l');
+        s.innerText = h;
+        dotsContainer.appendChild(s);
+    });
+    
+    document.getElementById('inputAdminHistory').value = history.join(',');
+    
+    const gamesContainer = document.getElementById('modalGamesList');
+    gamesContainer.innerHTML = games.length === 0 ? "<span style='color:#94a3b8;'>None</span>" : "";
+    games.forEach(g => {
+        const b = document.createElement('span');
+        b.className = "modal-game-badge";
+        b.innerText = g.toUpperCase();
+        gamesContainer.appendChild(b);
+    });
+    
+    document.getElementById('modalSocialDiscord').innerText = social.discord;
+    document.getElementById('modalSocialYoutube').innerText = social.youtube;
+    document.getElementById('modalSocialTwitch').innerText = social.twitch;
+    
+    if(currentLoggedInRank === "ADMIN" || currentLoggedInRank === "OWNER") {
+        document.getElementById('adminPtsControlBox').style.display = "block";
+    } else {
+        document.getElementById('adminPtsControlBox').style.display = "none";
+    }
+    
+    document.getElementById('profileModal').style.display = 'flex';
+}
+
+function adjustPlayerPtsCustom(action) {
+    if(!selectedProfileNameInModal) return;
+    
+    const amtInput = document.getElementById('inputAdminPtsAmount');
+    const amt = parseInt(amtInput.value.trim());
+    
+    if(isNaN(amt) || amt <= 0) {
+        alert("Please enter a valid positive number.");
+        return;
+    }
+    
+    let lb = JSON.parse(localStorage.getItem('infinity_leaderboard')) || [...defaultLeaderboardList];
+    const idx = lb.findIndex(p => p.name.toLowerCase() === selectedProfileNameInModal.toLowerCase());
+    
+    if(idx !== -1) {
+        if(action === 'add') {
+            lb[idx].pts = lb[idx].pts + amt;
+        } else if(action === 'remove') {
+            lb[idx].pts = Math.max(0, lb[idx].pts - amt);
+        }
+        
+        localStorage.setItem('infinity_leaderboard', JSON.stringify(lb));
+        amtInput.value = "";
+        openDetailedProfileModal(selectedProfileNameInModal);
+        renderLeaderboard();
+    }
+}
+
+function updatePlayerHistoryCustom() {
+    if(!selectedProfileNameInModal) return;
+    
+    const histInput = document.getElementById('inputAdminHistory').value;
+    const newHistory = histInput ? histInput.split(',').map(s => s.trim().toUpperCase()).filter(s => s === 'W' || s === 'L') : [];
+    
+    let accounts = JSON.parse(localStorage.getItem('infinity_accounts')) || [];
+    const idx = accounts.findIndex(a => a.username.toLowerCase() === selectedProfileNameInModal.toLowerCase());
+    
+    if(idx !== -1) {
+        accounts[idx].history = newHistory;
+        localStorage.setItem('infinity_accounts', JSON.stringify(accounts));
+        
+        if(selectedProfileNameInModal.toLowerCase() === currentLoggedInUser.toLowerCase()) {
+            applyLoginState();
+        }
+        
+        openDetailedProfileModal(selectedProfileNameInModal);
+        alert("Match history updated successfully!");
+    } else {
+        alert("This player doesn't have a registered account to store history details.");
+    }
+}
+
+function changePlayerSystemRank(newRank) {
+    if(!selectedProfileNameInModal) return;
+    
+    let accounts = JSON.parse(localStorage.getItem('infinity_accounts')) || [];
+    const idx = accounts.findIndex(a => a.username.toLowerCase() === selectedProfileNameInModal.toLowerCase());
+    if(idx !== -1) {
+        accounts[idx].rank = newRank;
+        localStorage.setItem('infinity_accounts', JSON.stringify(accounts));
+    }
+    
+    let lb = JSON.parse(localStorage.getItem('infinity_leaderboard')) || [...defaultLeaderboardList];
+    const lbIdx = lb.findIndex(p => p.name.toLowerCase() === selectedProfileNameInModal.toLowerCase());
+    if(lbIdx !== -1) {
+        lb[lbIdx].rank = newRank;
+        localStorage.setItem('infinity_leaderboard', JSON.stringify(lb));
+    }
+    
+    if(selectedProfileNameInModal.toLowerCase() === currentLoggedInUser.toLowerCase()) {
+        currentLoggedInRank = newRank;
+        localStorage.setItem('currentLoggedInRank', currentLoggedInRank);
+        applyLoginState();
+    }
+    
+    openDetailedProfileModal(selectedProfileNameInModal);
+    renderLeaderboard();
+}
+
+function deletePlayerFromLeaderboard() {
+    if(!selectedProfileNameInModal) return;
+    if(!confirm(`Are you sure you want to delete ${selectedProfileNameInModal}?`)) return;
+    
+    let lb = JSON.parse(localStorage.getItem('infinity_leaderboard')) || [...defaultLeaderboardList];
+    lb = lb.filter(p => p.name.toLowerCase() !== selectedProfileNameInModal.toLowerCase());
+    localStorage.setItem('infinity_leaderboard', JSON.stringify(lb));
+    
+    document.getElementById('profileModal').style.display = 'none';
+    renderLeaderboard();
+}
+
+function openAddPlayerModal() {
+    document.getElementById('addPlayerName').value = "";
+    document.getElementById('addPlayerPts').value = "0";
+    document.getElementById('addPlayerModal').style.display = "flex";
+}
+
+function submitAddPlayer() {
+    const name = document.getElementById('addPlayerName').value.trim();
+    const pts = parseInt(document.getElementById('addPlayerPts').value) || 0;
+    
+    if(!name) {
+        alert("Enter a player name.");
+        return;
+    }
+    
+    let lb = JSON.parse(localStorage.getItem('infinity_leaderboard')) || [...defaultLeaderboardList];
+    if(lb.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+        alert("Player already exists on the leaderboard.");
+        return;
+    }
+    
+    lb.push({ name: name, pts: pts, rank: "PLAYER" });
+    localStorage.setItem('infinity_leaderboard', JSON.stringify(lb));
+    
+    document.getElementById('addPlayerModal').style.display = "none";
+    renderLeaderboard();
+}
+
+function updateTournamentDetails() {
+    const name = document.getElementById('inputTourName').value.trim() || "INFINITY LEAGUE";
+    const days = parseInt(document.getElementById('inputDays').value) || 0;
+    const hours = parseInt(document.getElementById('inputHours').value) || 0;
+    const phase = document.getElementById('inputPhase').value.trim() || "Tournament Bracket";
+    const t1 = document.getElementById('inputTeam1').value.trim() || "Team 1";
+    const t2 = document.getElementById('inputTeam2').value.trim() || "Team 2";
+    
+    const tData = {
+        name: name,
+        endTime: Date.now() + (days * 24 * 60 * 60 * 1000) + (hours * 60 * 60 * 1000),
+        phase: phase,
+        team1: t1,
+        team2: t2
+    };
+    
+    localStorage.setItem('infinity_tour_live', JSON.stringify(tData));
+    loadLiveTournament();
+    alert("Live tournament metadata updated successfully!");
+}
+
+function loadLiveTournament() {
+    const raw = localStorage.getItem('infinity_tour_live');
+    if(!raw) {
+        startCountdown(Date.now() + 2 * 24 * 60 * 60 * 1000);
+        return;
+    }
+    const data = JSON.parse(raw);
+    document.getElementById('liveTourName').innerText = data.name;
+    document.getElementById('liveTourPhase').innerText = data.phase;
+    document.getElementById('liveTeam1').innerText = data.team1;
+    document.getElementById('liveTeam2').innerText = data.team2;
+    
+    startCountdown(data.endTime);
+}
+
+function startCountdown(targetTime) {
+    if(countdownInterval) clearInterval(countdownInterval);
+    
+    function updateClock() {
+        const diff = targetTime - Date.now();
+        if(diff <= 0) {
+            document.getElementById('liveCountdown').innerText = "00d 00h 00m 00s";
+            clearInterval(countdownInterval);
+            return;
+        }
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        document.getElementById('liveCountdown').innerText = 
+            `${d.toString().padStart(2,'0')}d ${h.toString().padStart(2,'0')}h ${m.toString().padStart(2,'0')}m ${s.toString().padStart(2,'0')}s`;
+    }
+    updateClock();
+    countdownInterval = setInterval(updateClock, 1000);
+}
+
+function publishAnnouncement() {
+    const msg = document.getElementById('announcementInput').value.trim();
+    if(!msg) return;
+    
+    localStorage.setItem('infinity_global_ann', msg);
+    triggerGlobalAlert(msg);
+    document.getElementById('announcementInput').value = "";
+}
+
+function triggerGlobalAlert(text) {
+    const container = document.getElementById('globalAnnouncementContainer');
+    const label = document.getElementById('announcementText');
+    
+    label.innerText = text.toUpperCase();
+    container.classList.add('slide-down');
+    
+    setTimeout(() => {
+        container.classList.remove('slide-down');
+    }, 7000);
+}
+
+function checkGlobalAnnouncementOnLoad() {
+    const lastAnn = localStorage.getItem('infinity_global_ann');
+    if(lastAnn) {
+        setTimeout(() => { triggerGlobalAlert(lastAnn); }, 1500);
+    }
+}
+
+window.onload = function() {
+    loadLiveTournament();
+    
+    if (currentLoggedInUser) {
+        applyLoginState();
+    } else {
+        switchTab('tournaments');
+    }
+    
+    renderLeaderboard();
+    checkGlobalAnnouncementOnLoad();
+};
+</script>
+
+</body>
+</html>
